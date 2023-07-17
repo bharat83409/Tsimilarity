@@ -1,0 +1,55 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Jul 17 15:56:04 2023
+
+@author: acer
+"""
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Text Similarity</title>
+</head>
+<body>
+    <h1>Enter Two Texts</h1>
+    <form method="post" onsubmit="calculateSimilarity(event)">
+        <label for="text1">Text 1:</label>
+        <input type="text" name="text1" id="text1">
+        <br>
+        <label for="text2">Text 2:</label>
+        <input type="text" name="text2" id="text2">
+        <br>
+        <input type="submit" value="Calculate Similarity">
+    </form>
+    <div id="result" style="display: none;">
+        <h1>Similarity Score</h1>
+        <p>The similarity score between the two texts is: <span id="similarity_score"></span></p>
+    </div>
+
+    <script>
+        function calculateSimilarity(event) {
+            event.preventDefault();
+            const text1 = document.getElementById('text1').value;
+            const text2 = document.getElementById('text2').value;
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/predict', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    const similarityScore = response.similarity_score;
+                    document.getElementById('similarity_score').innerText = similarityScore;
+                    document.getElementById('result').style.display = 'block';
+                } else {
+                    console.error('Request failed. Status:', xhr.status);
+                }
+            };
+
+            const formData = `text1=${encodeURIComponent(text1)}&text2=${encodeURIComponent(text2)}`;
+            xhr.send(formData);
+        }
+    </script>
+</body>
+</html>
